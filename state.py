@@ -1,27 +1,26 @@
-from PIL import Image
+from PIL import Image, ImageChops
 from aggdraw import Draw, Pen, Brush
 import numpy as np
 from utils import *
 from shapes import Ellipse
-from image_reader import ImageLoader
 
 class State(object):
     ''' 
     This class represents a state (i.e. a vector of inputs) of the Image Approximation problem
 
-    ellipse_list - [Ellipse(...), ...] * NUMBER_OF_SHAPES
+    shapes_list - [Ellipse(...), ...] * NUMBER_OF_SHAPES
     evaluation   - Float representing the avarage pixel distance (see pixels_array_distance)
     fitness      - 1 - evaluation / MAX_EVALUATION
     '''
-    def __init__(self, ellipse_list):
-        self.ellipse_list = ellipse_list
+    def __init__(self, shapes_list):
+        self.shapes_list = shapes_list
         self.evaluation = -1
         self.fitness = -1
 
     def get_image(self, im_width, im_length):
         im = Image.new("RGBA", (im_width, im_length), (0, 0, 0, MAX_COLOR))
         draw = Draw(im)
-        for ellipse in self.ellipse_list:
+        for ellipse in self.shapes_list:
             brush = Brush(ellipse.color)
             draw.ellipse((ellipse.center_x - ellipse.radius_x,
                           ellipse.center_y - ellipse.radius_y,
@@ -59,3 +58,4 @@ class State(object):
         self.evaluation = self.pixels_array_distance(pix_arr, base_pix_arr)
         self.fitness = 1 - (self.evaluation / MAX_PIXELS_DISTANCE)
         # print("end evaluate - {0}".format(datetime.now() - start_time))
+        return self.evaluation, self.fitness

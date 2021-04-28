@@ -81,7 +81,7 @@ def random_state(im_width, im_length):
     '''
     Generate a totally random state
     '''
-    ellipse_list = []
+    shapes_list = []
     for i in range(NUMBER_OF_SHAPES):
         ellipse = Ellipse(random.randint(0, im_width),
                             random.randint(0, im_length),
@@ -93,16 +93,16 @@ def random_state(im_width, im_length):
                             random.randint(0, MAX_COLOR),
                             random.randint(0, MAX_COLOR),
                             ))
-        ellipse_list.append(ellipse)
+        shapes_list.append(ellipse)
 
-    return State(ellipse_list)
+    return State(shapes_list)
 
 
 def generate_initial_state(im_width, im_length, base_pix_arr):
     '''
     Generate a state with shapes that pave the entire image fairly evenly, with the avarage color of the pixels in the original image
     '''
-    ellipse_list = []
+    shapes_list = []
     w_range = int(np.floor(np.sqrt(NUMBER_OF_SHAPES * im_width / im_length)))
     h_range = int(np.floor(NUMBER_OF_SHAPES / w_range))
     w_step = int(np.floor(im_width / (w_range + 1)))
@@ -111,23 +111,23 @@ def generate_initial_state(im_width, im_length, base_pix_arr):
         for j in range(h_range):
             # This function will determain the radiuses by itself
             ellipse = ellipse_mean_color(w_step * (i + 1), h_step * (j + 1), im_width, im_length, base_pix_arr)
-            ellipse_list.append(ellipse)
+            shapes_list.append(ellipse)
 
     # Finish all shaped with empty shapes
-    for i in range(NUMBER_OF_SHAPES - len(ellipse_list)):
+    for i in range(NUMBER_OF_SHAPES - len(shapes_list)):
         ellipse = Ellipse(0, 0, 0, 0, (0, 0, 0, 0))
-        ellipse_list.append(ellipse)
+        shapes_list.append(ellipse)
 
-    return State(ellipse_list)
+    return State(shapes_list)
 
 
 def generate_initial_random_state(im_width, im_length, base_pix_arr):
     '''
     Generate a state with random shapes in random locations, where again, color is determined by the original image pixels avarage
     '''
-    ellipse_list = []
+    shapes_list = []
     for i in range(NUMBER_OF_SHAPES):
         ellipse = ellipse_mean_color_radius(random.randint(0, im_width - 1), random.randint(0, im_length - 1), random.randint(MIN_ELLIPSE_RADIUS, 100), random.randint(MIN_ELLIPSE_RADIUS, 100), im_width, im_length, base_pix_arr)
-        ellipse_list.append(ellipse)
+        shapes_list.append(ellipse)
 
-    return State(ellipse_list)
+    return State(shapes_list)
