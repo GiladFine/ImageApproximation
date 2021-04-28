@@ -1,10 +1,14 @@
 import random
+from aggdraw import Draw, Brush
 from utils import *
 class Shape(object):
     def __init__(self, color):
         self.color = color
 
     def mutate_gene(self, val, prob, step, min_val = None, max_val = None):
+        '''
+        Changes an input value, with some input probability, with input step size, while checking for bounds
+        '''
         if random.uniform(0, 1) > prob:
             return val
         new_val = val + random.choice([-1, 1]) * step
@@ -33,8 +37,8 @@ class Ellipse(Shape):
 
 
     def mutate(self, prob, im_width, im_length):
-        self.radius_x = self.mutate_gene(self.radius_x, prob, MUTATION_AMOUNT * 50, min_val=0)
-        self.radius_y = self.mutate_gene(self.radius_y, prob, MUTATION_AMOUNT * 50, min_val=0)
+        self.radius_x = self.mutate_gene(self.radius_x, prob, MUTATION_AMOUNT * im_width, min_val=0)
+        self.radius_y = self.mutate_gene(self.radius_y, prob, MUTATION_AMOUNT * im_length, min_val=0)
         self.center_x = self.mutate_gene(self.center_x, prob, MUTATION_AMOUNT * im_width, min_val=0, max_val=im_width - 1)
         self.center_y = self.mutate_gene(self.center_y, prob, MUTATION_AMOUNT * im_length, min_val=0, max_val=im_length - 1)
 
@@ -44,3 +48,11 @@ class Ellipse(Shape):
         n_A = self.mutate_gene(self.color[3], prob, round(MUTATION_AMOUNT * MAX_COLOR), min_val=0, max_val=MAX_COLOR)
 
         self.color = (n_R, n_G, n_B, n_A) 
+
+    
+    def draw(self, draw_obj):
+        brush = Brush(self.color)
+        draw_obj.ellipse((self.center_x - self.radius_x,
+                          self.center_y - self.radius_y,
+                          self.center_x + self.radius_x,
+                          self.center_y + self.radius_y), brush)

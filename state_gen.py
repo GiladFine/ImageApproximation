@@ -3,12 +3,11 @@ import random
 from utils import *
 from state import State
 from shapes import Ellipse
-
+from utils import *
 
 '''
 This file helps calculate and generate effective states analytically
 '''
-MAX_INITIAL_RADIUS = 70
 
 def calc_pixels_var_and_mean(pixel_list):
     if not pixel_list:
@@ -30,7 +29,7 @@ def calc_pixels_var_and_mean(pixel_list):
 
 
 
-def ellipse_mean_color(center_x ,center_y, im_width, im_length, base_pix_arr):
+def ellipse_mean_color(center_x ,center_y, max_x_radius, max_y_radius, im_width, im_length, base_pix_arr):
     '''
     Generate a circle around the input point, by gradually increasing radiuses until size or variance exceed values
     '''
@@ -40,7 +39,7 @@ def ellipse_mean_color(center_x ,center_y, im_width, im_length, base_pix_arr):
     ellipse = Ellipse(center_x, center_y, MIN_ELLIPSE_RADIUS, MIN_ELLIPSE_RADIUS, mean_color)
     prev_ellipse = Ellipse(center_x, center_y, 0, 0, mean_color)
     while(True):
-        if ellipse.radius_x > 25 or ellipse.radius_y > 25 or variance > INITIAL_SHAPE_MAX_VAR:
+        if ellipse.radius_x > max_x_radius or ellipse.radius_x > max_y_radius or variance > INITIAL_SHAPE_MAX_VAR:
             return prev_ellipse
 
         for i in range(max(ellipse.center_x - ellipse.radius_x, 0), min(ellipse.center_x + ellipse.radius_x, im_width)):
@@ -85,8 +84,8 @@ def random_state(im_width, im_length):
     for i in range(NUMBER_OF_SHAPES):
         ellipse = Ellipse(random.randint(0, im_width),
                             random.randint(0, im_length),
-                            random.randint(MIN_ELLIPSE_RADIUS, MAX_INITIAL_RADIUS),
-                            random.randint(MIN_ELLIPSE_RADIUS, MAX_INITIAL_RADIUS),
+                            random.randint(MIN_ELLIPSE_RADIUS, im_width),
+                            random.randint(MIN_ELLIPSE_RADIUS, im_length),
                             (
                             random.randint(0, MAX_COLOR),
                             random.randint(0, MAX_COLOR),
@@ -110,7 +109,7 @@ def generate_initial_state(im_width, im_length, base_pix_arr):
     for i in range(w_range):
         for j in range(h_range):
             # This function will determain the radiuses by itself
-            ellipse = ellipse_mean_color(w_step * (i + 1), h_step * (j + 1), im_width, im_length, base_pix_arr)
+            ellipse = ellipse_mean_color(w_step * (i + 1), h_step * (j + 1), w_step, h_step, im_width, im_length, base_pix_arr)
             shapes_list.append(ellipse)
 
     # Finish all shaped with empty shapes
