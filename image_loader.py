@@ -20,8 +20,10 @@ class ImageLoader(object):
         if self.base_image.mode not in ['RGBA', 'RGB']:
             Exception("Unknown image mode - " + self.base_image.mode)
         
-        self.image_width, self.image_length = self.base_image.size
-        self.resized_width, self.resized_length = self.calc_resize(self.image_width, self.image_length)
+        self.image_width, self.image_length = self.calc_resize(self.base_image.size[0], self.base_image.size[1], BASE_IMAGE_MAX_PIXELS)
+        self.base_image = self.base_image.resize((self.image_width, self.image_length))
+
+        self.resized_width, self.resized_length = self.calc_resize(self.image_width, self.image_length, EVALUATION_MAX_PIXELS)
         self.resized_image = self.base_image.resize((self.resized_width, self.resized_length))
        
         self.base_pixels_array = np.asarray(self.base_image)
@@ -31,12 +33,12 @@ class ImageLoader(object):
         self.resized_pixels_array_alpha = self.add_alpha_to_pixels(self.resized_pixels_array)
 
 
-    def calc_resize(self, im_width, im_length):
-        if im_width * im_length <= RESIZED_PIXELS_AMOUNT: # Image is small enough
+    def calc_resize(self, im_width, im_length, pixel_amount):
+        if im_width * im_length <= pixel_amount: # Image is small enough
             return (im_width, im_length)
 
         # In order for the image ratio to be preserved, we calc the factor to resize the image by
-        factor = np.sqrt(im_width * im_length / RESIZED_PIXELS_AMOUNT)
+        factor = np.sqrt(im_width * im_length / pixel_amount)
         return (round(im_width / factor), round(im_length / factor))
 
 

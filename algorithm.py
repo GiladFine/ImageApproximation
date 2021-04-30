@@ -57,7 +57,7 @@ class Genetics(Algorithm):
                 continue
             random.shuffle(state.shapes_list)
             for ellipse in state.shapes_list:
-                ellipse.mutate(1, self.im_width, self.im_length) # with 1 probability
+                ellipse.mutate(1, self.im_width, self.im_length) 
 
         fixed_states_list.append(initial_state)
 
@@ -81,7 +81,8 @@ class Genetics(Algorithm):
             shape.mutate(MUTATION_PROBABILITY, self.im_width, self.im_length)
             
             new_shapes_list.append(shape)
-            random.shuffle(new_shapes_list) 
+            if random.uniform(0, 1) < MUTATION_PROBABILITY:
+                random.shuffle(new_shapes_list) 
 
         return State(new_shapes_list)
 
@@ -122,7 +123,7 @@ class Genetics(Algorithm):
             self.evaluate_generation(new_generation)
 
             # Add top states from current generation to next (fittest survive!)
-            new_generation.extend(self.current_generation[:5])
+            new_generation.extend(self.current_generation[:CROSSOVER_POPULATION])
             new_generation.sort(key = lambda x: x.evaluation)
 
             # Drop worst states back to the desired population size
